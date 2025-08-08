@@ -1,0 +1,28 @@
+.section .rodata
+red:     .asciz "\033[31m"
+green:   .asciz "\033[32m"
+blue:    .asciz "\033[34m"
+reset:   .asciz "\033[0m"
+
+.macro colorwrite str, color, len
+    # write color
+    .ifc \color, red
+        syswrite red, 5
+    .else
+    .ifc \color, green
+        syswrite green, 5
+    .else
+    .ifc \color, blue
+        syswrite blue, 5
+    .else
+        .error "Unknown color"
+    .endif
+    .endif
+    .endif
+    
+    # write string
+    syswrite \str, \len
+    
+    # write reset
+    syswrite reset, 4
+.endm

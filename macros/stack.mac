@@ -1,0 +1,25 @@
+.macro push reg
+	addi sp, sp, -8
+	sd \reg. 0(sp)
+.endm
+
+.macro pop reg
+	ld \reg, 0(sp)
+	addi sp, sp, 8
+.endm
+
+.macro argc reg
+    lw \reg, 0(sp)          # Load argc from top of stack
+.endm
+
+.macro argv reg, index
+.ifnb \index                    # If index parameter is provided
+    addi \reg, sp, 4           # Get base argv pointer
+    li t6, \index              # Load index into temporary register
+    slli t6, t6, 2             # Multiply index by 4 (pointer size for RV32)
+    add \reg, \reg, t6         # Add offset to base pointer
+    lw \reg, 0(\reg)           # Load the actual argument pointer
+.else                          # If no index, just return argv base pointer
+    addi \reg, sp, 4           # argv starts 4 bytes after argc (sp + 4)
+.endif
+.endm
